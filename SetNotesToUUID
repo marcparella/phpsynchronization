@@ -1,0 +1,38 @@
+<?
+//query tblNotes and return the latest DateTime Stamp for the ArtistID (initials) provided
+include 'common.php';
+include 'database.php';
+$tablename = 'tblNotes';
+$dbname=getDatabase();
+$connection = mysql_connect("localhost", "pricerub_priceru", "prp95") 
+or die(mysql_error());
+
+$db = @mysql_select_db($dbname, $connection)
+or die(mysql_error());
+
+//Build an insert query 
+$sql = "Select * from ".$tablename ." where ReplicationID = 0";
+
+//Process the Query
+$result = @mysql_query($sql, $connection) or die(mysql_error());
+
+while($row = mysql_fetch_array($result))
+{
+	$uuid = getUUID();
+	echo $uuid . "<br>";
+	echo $row['ID']."<br>";
+	$updatesql = "Update ". $tablename." Set ReplicationID = ".$uuid. " where ID = ". $row['ID'];
+	$updateresult = @mysql_query($updatesql, $connection) or die(mysql_error());
+}
+
+function getUUID() {
+    $uuid = uniqid(rand(), true);
+    $id =  substr($uuid, 0, 9);
+	  $pos = strpos($id,"c");
+    if ($pos > 0) {
+	     $id = substr($uuid, 0, $pos);
+	}
+	return $id;
+}
+?>
+
